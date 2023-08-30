@@ -254,14 +254,14 @@ def main():
                 if event.key == pygame.K_DOWN:
                     pygame.time.set_timer(auto_move_timer, 100)
                     game.move(0, 1)
-                if event.key == pygame.K_t:
-                    ai_on = True
-                    ai_inputs = get_ai_inputs(game)
 
-            if game.running and ai_on and event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_i:
+            if game.running and event.type == pygame.KEYDOWN and event.key == pygame.K_t:
+                if ai_on:
                     ai_on = False
                     input_idx = 0
+                else:
+                    ai_on = True
+                    ai_inputs = get_ai_inputs(game)
 
             # set speed back to normal when you release down
             if event.type == pygame.KEYUP:

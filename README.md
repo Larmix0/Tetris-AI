@@ -5,7 +5,7 @@ This bot was made slowly over the months with small changes every now and then, 
 I'm still pretty proud about this project since the AI runs relatively fast (~0.15 seconds per move) despite calculating 1 move into the future.
 
 # Playing the game
-After running the game you use left arrow and right arrow to move the piece. Up arrow rotates, and control hard-drops the piece. Press spacebar during the game to toggle the AI on and off.
+After running the game you use left arrow and right arrow to move the piece. Up arrow rotates, down arrow moves down, control hard-drops the piece, "z" holds piece. Press "t" during the game to toggle the AI on and off.
 
 # Running the project
 ### To run the game/ai:
