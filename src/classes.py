@@ -86,7 +86,7 @@ class Tetris:
         self.piece_y = 0
         self.rotation = 0
     
-    def generate_next(self) -> None:
+    def generate_next(self):
         """Choose a random next piece while following tetris guidelines on random piece generation.
 
         The way it works is by choosing one of the pieces
@@ -110,7 +110,7 @@ class Tetris:
 
         self.piece_alive = False
     
-    def line_clears(self) -> int:
+    def line_clears(self):
         """Checks if any row has only dead blocks (cleared).
         
         Clears the rows by completely removing the cleared row,
@@ -125,7 +125,7 @@ class Tetris:
                 self.grid.insert(0, [GB.EMPTY]*COLS)
         return clears
     
-    def move(self, x, y) -> bool:
+    def move(self, x, y):
         """Move piece on a given grid."""
         if not self.move_is_legal(x=x, y=y):
             if y:
@@ -142,7 +142,7 @@ class Tetris:
         self.piece_y += y
         return True
 
-    def rotate(self) -> bool:
+    def rotate(self):
         """Rotates piece. Returns a bool to tell us if rotation was successful or not."""
         if not self.move_is_legal(rotate=True):
             return False
@@ -156,7 +156,7 @@ class Tetris:
         self.rotation = self.next_rotation
         return True
 
-    def move_is_legal(self, x=0, y=0, rotate=False) -> bool:
+    def move_is_legal(self, x=0, y=0, rotate=False):
         """Checks legality of a move without implementing it."""
         rotation = self.next_rotation if rotate else self.rotation
 
@@ -269,7 +269,7 @@ class Game(Tetris):
                 self.sfx.DEATH.play()
 
     @staticmethod
-    def swap_pieces(piece1: Piece, piece2: Piece):
+    def swap_pieces(piece1, piece2):
         """Swaps two piece's attributes."""
         original_1_num = piece1.piece_num
         piece1.change_piece(piece2.piece_num)
@@ -280,7 +280,7 @@ class Position(Tetris):
     """Represents a position produced by AI."""
     __slots__ = ("inputs", "current", "next", "using_held", "score")
 
-    def __init__(self, position: dict, current: Piece, next_: Piece, has_swapped=False):
+    def __init__(self, position, current, next_, has_swapped=False):
         super().__init__(
             position["grid"], position["rotation"], position["x"], position["y"],
             current=Piece(current.piece_num), next_=Piece(next_.piece_num)
@@ -290,7 +290,7 @@ class Position(Tetris):
         self.using_held = has_swapped
         self.score = 0
 
-    def convert_to_hard_drop(self) -> None:
+    def convert_to_hard_drop(self):
         """Converts inputs to hard-drop.
         
         This was made for extra speed whenever AI's not doing any fancy spins,

@@ -126,7 +126,7 @@ def filter_end_pos(end_positions, current_pos, tetris_pos):
     })
 
 
-def grid_copy(grid: list[list[str]]):
+def grid_copy(grid):
     """Generator which yields a copy of a grid's rows one by one.
     
     An optimization for creating copies faster than copy.deepcopy() and comprehension.
@@ -135,7 +135,7 @@ def grid_copy(grid: list[list[str]]):
         yield list(row)
 
 
-def dict_to_tetris(position: dict, current_piece):
+def dict_to_tetris(position, current_piece):
     """Convert a position from a dict to a Tetris object, so we can use move() and rotate()."""
     converted_grid = Tetris(
         position["grid"], position["rotation"], position["x"], position["y"]

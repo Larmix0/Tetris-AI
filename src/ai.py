@@ -29,7 +29,7 @@ def ai_move(game_copy):
     return best_position
 
 
-def find_best_sub_position(position) -> int:
+def find_best_sub_position(position):
     """evaluates the passed position's sub-positions to predict the future score of it."""
     # keep track of the piece we just placed
     for x, y in position.current.shape[position.rotation]:
@@ -61,7 +61,7 @@ def get_best_position(positions):
     return best_position
 
 
-def correct_inputs(position) -> None:
+def correct_inputs(position):
     """Either keeps the inputs of the position or converts it to one we can hard-drop.
     
     By default we have our inputs done one by one from generate_moves.py, but most of the time
@@ -83,7 +83,7 @@ def correct_inputs(position) -> None:
         position.convert_to_hard_drop()
 
 
-def eval_holes(position) -> None:
+def eval_holes(position):
     """Finds all holes and categorizes them.
 
     A hole is an empty block which has a piece's block above it.
@@ -112,7 +112,7 @@ def eval_holes(position) -> None:
         position.score += AiMultipliers.ROWS_WITH_HOLES
 
 
-def add_hole(grid, open_holes, closed_holes, x, y) -> None:
+def add_hole(grid, open_holes, closed_holes, x, y):
     """Determines if a found hole is closed or open.
     
     A closed hole is a hole which is closed by another block or the wall
@@ -143,7 +143,7 @@ def eval_height(position):
     position.score += real_height * AiMultipliers.HEIGHT
 
 
-def find_bumps(position) -> list[int]:
+def find_bumps(position):
     """Finds grid bumpiness by seeing how low is the lowest non-empty block on each column."""
     bumpiness = []
     for x in range(COLS):
