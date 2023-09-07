@@ -13,8 +13,11 @@ from enum import Enum, auto
 
 from .pieces import S, Z, I, O, J, L ,T
 
-IS_MAIN_PROCESS = current_process().name == "MainProcess"
+ROWS = 20
+COLS = 10
 INVIS_GRID_TOP = 3
+
+IS_MAIN_PROCESS = current_process().name == "MainProcess"
 
 
 class Pieces:

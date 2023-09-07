@@ -1,7 +1,7 @@
 from multiprocessing import Pool
 
 from .generate_moves import generate_all_moves
-from .constants import INVIS_GRID_TOP, Movement, AiMultipliers, GridBlock as GB
+from .constants import COLS, ROWS, INVIS_GRID_TOP, Movement, AiMultipliers, GridBlock as GB
 
 
 def ai_move(game_copy):
@@ -70,9 +70,9 @@ def correct_inputs(position) -> None:
     because it means the position can't be reached via a hard-drop.
     """
     hard_drop = True
-    for x in range(len(position.grid[0])):
+    for x in range(COLS):
         dead_block_found = False
-        for y in range(len(position.grid)):
+        for y in range(ROWS+INVIS_GRID_TOP):
 
             if position.grid[y][x] not in [GB.ACTIVE, GB.EMPTY]:
                 dead_block_found = True
@@ -93,10 +93,10 @@ def eval_holes(position) -> None:
     open_holes, closed_holes = [], []
     rows_with_holes = set()
 
-    for x in range(len(position.grid[0])):
+    for x in range(COLS):
         piece_detected = False
 
-        for y in range(len(position.grid)):
+        for y in range(ROWS+INVIS_GRID_TOP):
             if position.grid[y][x] != GB.EMPTY:
                 piece_detected = True
 
@@ -118,11 +118,11 @@ def add_hole(grid, open_holes, closed_holes, x, y) -> None:
     A closed hole is a hole which is closed by another block or the wall
     on both sides, which makes it impossible to fill using fancy spins.
     """
-    right_closed = grid[y][x+1] != GB.EMPTY if x != 9 else True
+    right_closed = grid[y][x+1] != GB.EMPTY if x != COLS-1 else True
     left_closed = grid[y][x-1] != GB.EMPTY if x != 0 else True
 
     # edge case where we have wall to our left or right
-    if (right_closed and x == 0) or (left_closed and x == 9):
+    if (right_closed and x == 0) or (left_closed and x == COLS-1):
         closed_holes.append((x, y))
 
     elif right_closed and left_closed:
@@ -146,10 +146,10 @@ def eval_height(position):
 def find_bumps(position) -> list[int]:
     """Finds grid bumpiness by seeing how low is the lowest non-empty block on each column."""
     bumpiness = []
-    for x in range(len(position.grid[0])):
+    for x in range(COLS):
         bump_found = False
         
-        for y in range(len(position.grid)):
+        for y in range(ROWS+INVIS_GRID_TOP):
             if position.grid[y][x] == GB.EMPTY:
                 continue
             bumpiness.append(y)
@@ -157,7 +157,7 @@ def find_bumps(position) -> list[int]:
             break
         # if no pieces are in a column, then grid height is the bumpiness
         if not bump_found:
-            bumpiness.append(20 + INVIS_GRID_TOP)
+            bumpiness.append(ROWS+INVIS_GRID_TOP)
     return bumpiness
 
 

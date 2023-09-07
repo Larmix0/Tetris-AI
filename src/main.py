@@ -3,11 +3,11 @@ import copy
 
 from .ai import ai_move
 from .classes import Game
-from .constants import IS_MAIN_PROCESS, INVIS_GRID_TOP, Movement, GridBlock as GB
+from .constants import COLS, ROWS, IS_MAIN_PROCESS, INVIS_GRID_TOP, Movement, GridBlock as GB
 
 SPACE = 30
-GRID_WIDTH = SPACE*10
-GRID_HEIGHT = SPACE*20
+GRID_WIDTH = SPACE*COLS
+GRID_HEIGHT = SPACE*ROWS
 
 RIGHT_MARGIN, LEFT_MARGIN = 350, 350
 BOTTOM_MARGIN, TOP_MARGIN = 100, 150
@@ -31,14 +31,14 @@ def show_grid():
         DISPLAY, "red", (LEFT_MARGIN-10, TOP_MARGIN-10, 321, 621), RECT_THICKNESS
     )
 
-    for line in range(1, 10):
+    for line in range(1, COLS):
         pygame.draw.line(
             DISPLAY, "dark gray", 
             (line*SPACE + LEFT_MARGIN, red_rect.top+RECT_THICKNESS),
             (line*SPACE + LEFT_MARGIN, red_rect.bottom-RECT_THICKNESS-1)
         )
 
-    for line in range(1, 20):
+    for line in range(1, ROWS):
         pygame.draw.line(
             DISPLAY, "dark gray", 
             (red_rect.right-RECT_THICKNESS-1, line*SPACE + TOP_MARGIN),
@@ -66,13 +66,18 @@ def draw_pieces(game):
                 continue
             pygame.draw.rect(
                 DISPLAY, color, 
-                (col_idx*SPACE + LEFT_MARGIN, (row_idx-INVIS_GRID_TOP) * SPACE + TOP_MARGIN,
-                 SPACE-1, SPACE-1)
+                (col_idx*SPACE + LEFT_MARGIN,
+                 (row_idx-INVIS_GRID_TOP) * SPACE + TOP_MARGIN,
+                 SPACE-1,
+                 SPACE-1)
             )
             pygame.draw.rect(
                 DISPLAY, "black", 
-                (col_idx*SPACE + LEFT_MARGIN, (row_idx-INVIS_GRID_TOP) * SPACE + TOP_MARGIN,
-                 SPACE+1, SPACE+1), 3
+                (col_idx*SPACE + LEFT_MARGIN,
+                 (row_idx-INVIS_GRID_TOP) * SPACE + TOP_MARGIN,
+                 SPACE+1,
+                 SPACE+1),
+                 3
             )
 
 
@@ -97,13 +102,16 @@ def ghost_piece(game):
                 DISPLAY, game.current.ghost_color, 
                 (col_idx*SPACE + LEFT_MARGIN+1,
                  (row_idx-INVIS_GRID_TOP+downs_counter) * SPACE + TOP_MARGIN,
-                 SPACE-1, SPACE-1)
+                 SPACE-1,
+                 SPACE-1)
             )
             pygame.draw.rect(
                 DISPLAY, "black", 
                 (col_idx*SPACE + LEFT_MARGIN,
                  (row_idx-INVIS_GRID_TOP+downs_counter) * SPACE + TOP_MARGIN,
-                 SPACE+1, SPACE+1), 3
+                 SPACE+1,
+                 SPACE+1),
+                 3
             )
 
 
@@ -133,13 +141,15 @@ def piece_frame(start_x, start_y, piece):
                 DISPLAY, piece.color, 
                 (start_x + PIECE_MARGIN + x*BLOCK_SIZE - x*4,
                  start_y + PIECE_MARGIN*2 + y*BLOCK_SIZE - y*4,
-                 BLOCK_SIZE, BLOCK_SIZE)
+                 BLOCK_SIZE,
+                 BLOCK_SIZE)
             )
             pygame.draw.rect(
                 DISPLAY, "black", 
                 (start_x + PIECE_MARGIN + x*BLOCK_SIZE - x*4,
                  start_y + PIECE_MARGIN*2 + y*BLOCK_SIZE - y*4,
-                 BLOCK_SIZE, BLOCK_SIZE), 4
+                 BLOCK_SIZE,
+                 BLOCK_SIZE), 4
             )
 
 
@@ -182,13 +192,15 @@ def menu(game, font):
                 DISPLAY, game.next.color,
                 (x*BLOCK_SIZE + PIECE_MARGIN - x*7,
                  y*BLOCK_SIZE + PIECE_MARGIN - y*7,
-                 BLOCK_SIZE, BLOCK_SIZE)
+                 BLOCK_SIZE,
+                 BLOCK_SIZE)
             )
             pygame.draw.rect(
                 DISPLAY, "black", 
                 (x*BLOCK_SIZE + PIECE_MARGIN - x*7,
                  y*BLOCK_SIZE + PIECE_MARGIN - y*7,
-                 BLOCK_SIZE, BLOCK_SIZE), 10
+                 BLOCK_SIZE,
+                 BLOCK_SIZE), 10
             )
                 
     instructions = font.render("Press Space to Begin", False, "white")
@@ -212,10 +224,6 @@ def main():
 
     auto_move_timer = pygame.USEREVENT + 1
     pygame.time.set_timer(auto_move_timer, 1000)
-
-    music = pygame.mixer.Sound("assets\\audio\\Music.mp3")
-    music.set_volume(0.6)
-    music.play(loops=-1)
     
     ai_on = False
     input_idx = 0

@@ -1,5 +1,5 @@
 from .classes import Tetris, Position
-from .constants import Movement, GridBlock as GB
+from .constants import ROWS, INVIS_GRID_TOP, Movement, GridBlock as GB
 
 
 def inputs_convert(rotations, x_move, y_move):
@@ -175,4 +175,4 @@ def get_structure_height(converted_grid):
         for col in row:
             if col not in [GB.ACTIVE, GB.EMPTY]:
                 return row_idx
-    return len(converted_grid.grid) # no dead blocks in the grid
+    return ROWS+INVIS_GRID_TOP # no dead blocks in the grid

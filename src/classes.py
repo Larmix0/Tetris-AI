@@ -1,6 +1,6 @@
 import random
 
-from .constants import IS_MAIN_PROCESS, INVIS_GRID_TOP, Movement, Pieces, GridBlock as GB
+from .constants import COLS, ROWS, IS_MAIN_PROCESS, INVIS_GRID_TOP, Movement, Pieces, GridBlock as GB
 
 
 class Sfx:
@@ -122,7 +122,7 @@ class Tetris:
             if GB.EMPTY not in row and GB.ACTIVE not in row:
                 clears += 1
                 self.grid.pop(idx)
-                self.grid.insert(0, [GB.EMPTY]*10)
+                self.grid.insert(0, [GB.EMPTY]*COLS)
         return clears
     
     def move(self, x, y) -> bool:
@@ -163,7 +163,7 @@ class Tetris:
         for col, row in self.current.shape[rotation]:
             new_x, new_y = col+self.piece_x+x, row+self.piece_y+y
             
-            if (new_x < 0 or new_x > len(self.grid[0])-1 or new_y > len(self.grid)-1
+            if (new_x < 0 or new_x > COLS-1 or new_y > ROWS+INVIS_GRID_TOP-1
                     or self.grid[new_y][new_x] not in [GB.ACTIVE, GB.EMPTY]):
                 return False
         return True
@@ -202,7 +202,7 @@ class Game(Tetris):
     sfx = Sfx()
 
     def __init__(self):
-        self.grid = [[GB.EMPTY for x in range(10)] for y in range(20 + INVIS_GRID_TOP)]
+        self.grid = [[GB.EMPTY for x in range(COLS)] for y in range(ROWS+INVIS_GRID_TOP)]
         super().__init__(self.grid)
 
         self.score = 0

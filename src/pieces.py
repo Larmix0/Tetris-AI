@@ -2,6 +2,7 @@
 
 the pieces here are drawn with their coordinates
 being relative to the top-left square of a 5x5 being (x=0, y=0).
+The pieces are S, Z, I, O, J, L, T.
 """
 S = (
     (
