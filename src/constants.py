@@ -1,7 +1,7 @@
 """Module that stores constants which are used over multiple files.
 
 INVIS_GRID_TOP (int):
-    How many invisible rows are above the 20x10 grid (in order to create the piece inside it).
+    How many invisible rows are above the ROWSxCOLS grid (in order to create the piece inside it).
 
 IS_MAIN_PROCESS (bool):
     tells us whether we're importing modules with main process or a child process.
@@ -13,8 +13,8 @@ from enum import Enum, auto
 
 from .pieces import S, Z, I, O, J, L ,T
 
-ROWS = 20
-COLS = 10
+ROWS = 10
+COLS = 20
 INVIS_GRID_TOP = 3
 
 IS_MAIN_PROCESS = current_process().name == "MainProcess"
