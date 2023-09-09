@@ -238,7 +238,7 @@ def main():
                 sys.exit()
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not game.running:
-                game.running = True
+                game.reset()
                 pygame.time.set_timer(auto_move_timer, 1000)
 
             # automatically moves down slowly

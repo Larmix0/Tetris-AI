@@ -232,7 +232,7 @@ class Game(Tetris):
         """Restarts everything on screen."""
         self.grid = [[GB.EMPTY for col in row] for row in self.grid]
         
-        self.running = False
+        self.running = True
         self.rotation = 0
         self.score = 0
         self.piece_x, self.piece_y = 0, 0
@@ -266,7 +266,7 @@ class Game(Tetris):
                     return
                 if col in [GB.ACTIVE, GB.EMPTY]:
                     continue
-                self.reset()
+                self.running = False
                 self.sfx.DEATH.play()
 
     @staticmethod
