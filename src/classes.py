@@ -77,12 +77,13 @@ class Tetris:
         """Places a new piece at the top of the grid. Doesn't get new piece if we're swapping"""
         if not swapping:
             self.generate_next()
-            
+        
+        x_offset = COLS//2 - 2
         for i in range(4):
-            self.grid[self.current.shape[0][i][1]][self.current.shape[0][i][0]+3] = GB.ACTIVE
+            self.grid[self.current.shape[0][i][1]][self.current.shape[0][i][0] + x_offset] = GB.ACTIVE
 
         self.piece_alive = True
-        self.piece_x = 3
+        self.piece_x = x_offset
         self.piece_y = 0
         self.rotation = 0
     

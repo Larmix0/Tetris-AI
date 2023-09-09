@@ -12,15 +12,17 @@ GRID_HEIGHT = SPACE*ROWS
 RIGHT_MARGIN, LEFT_MARGIN = 350, 350
 BOTTOM_MARGIN, TOP_MARGIN = 100, 150
 
-NEXT_X, NEXT_Y = 700, 150
+NEXT_X, NEXT_Y = 400 + (COLS*SPACE), 150
 HELD_X, HELD_Y = 50, 150
 
 if IS_MAIN_PROCESS:
     import pygame
 
     pygame.init()
+    X_SCREEN_GRID_PAD = SPACE*10 if GRID_WIDTH < SPACE*10 else GRID_WIDTH # sets default in case too few cols
+    Y_SCREEN_GRID_PAD = SPACE*20 if GRID_HEIGHT < SPACE*20 else GRID_HEIGHT # sets default in case too few rows
     DISPLAY = pygame.display.set_mode(
-        (GRID_WIDTH+RIGHT_MARGIN+LEFT_MARGIN, GRID_HEIGHT+TOP_MARGIN+BOTTOM_MARGIN)
+        (X_SCREEN_GRID_PAD+RIGHT_MARGIN+LEFT_MARGIN, Y_SCREEN_GRID_PAD+TOP_MARGIN+BOTTOM_MARGIN)
     )
 
 
@@ -28,7 +30,7 @@ def show_grid():
     """Draw a red rectangle around the grid and the gray lines which divide each block."""
     RECT_THICKNESS = 10
     red_rect = pygame.draw.rect(
-        DISPLAY, "red", (LEFT_MARGIN-10, TOP_MARGIN-10, 321, 621), RECT_THICKNESS
+        DISPLAY, "red", (LEFT_MARGIN-10, TOP_MARGIN-10, (COLS*SPACE) + 21, (ROWS*SPACE) + 21), RECT_THICKNESS
     )
 
     for line in range(1, COLS):
@@ -179,8 +181,8 @@ def get_ai_inputs(game):
 
 def menu(game, font):
     """Displays menu screen and a piece in the middle shaped on a 5x5 grid with some text."""
-    BLOCK_SIZE = 100
-    PIECE_MARGIN = 250
+    PIECE_MARGIN = (DISPLAY.get_size()[0]+DISPLAY.get_size()[1]) // 7
+    BLOCK_SIZE = PIECE_MARGIN//3
 
     DISPLAY.fill(game.next.ghost_color)
 
@@ -205,13 +207,13 @@ def menu(game, font):
                 
     instructions = font.render("Press Space to Begin", False, "white")
     instructions_rect = instructions.get_rect(
-        center=((GRID_WIDTH+RIGHT_MARGIN+LEFT_MARGIN)/2, 700)
+        center=((X_SCREEN_GRID_PAD+RIGHT_MARGIN+LEFT_MARGIN)/2, PIECE_MARGIN + BLOCK_SIZE*5)
     )
     DISPLAY.blit(instructions, instructions_rect)
 
     score_text = font.render(f"Your score is  {game.score}!", False, "white")
     score_rect = score_text.get_rect(
-        center=((GRID_WIDTH+RIGHT_MARGIN+LEFT_MARGIN)/2, 200)
+        center=((X_SCREEN_GRID_PAD//2 + LEFT_MARGIN), PIECE_MARGIN-BLOCK_SIZE)
     )
     DISPLAY.blit(score_text, score_rect)
 
