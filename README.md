@@ -13,7 +13,11 @@ After running the game you use left arrow and right arrow to move the piece. Up 
 
 2. Change to project directory with `cd Tetris-AI`
 
-3. Run the run.py file as a script or type `python -m run.py`
+3. Create and activate a virtual environment if you don't want to install packages directly on your global pip (look for a tutorial if you don't know how).
+
+4. Install the required packages for the project with `pip install -r requirements.txt`
+
+5. Run the run.py file as a script or type `python run.py`
 
 # Running tests
 ### To run all tests:
