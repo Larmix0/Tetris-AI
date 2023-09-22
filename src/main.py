@@ -2,7 +2,7 @@ import sys
 import copy
 
 from .ai import ai_move
-from .classes import Game
+from .classes import Game, AiExecutor
 from .constants import COLS, ROWS, IS_MAIN_PROCESS, INVIS_GRID_TOP, Movement, GridBlock as GB
 
 SPACE = 30
@@ -33,6 +33,7 @@ def show_grid():
         DISPLAY, "red", (LEFT_MARGIN-10, TOP_MARGIN-10, (COLS*SPACE) + 21, (ROWS*SPACE) + 21), RECT_THICKNESS
     )
 
+    # draw gray lines that divide columns and rows
     for line in range(1, COLS):
         pygame.draw.line(
             DISPLAY, "dark gray", 
@@ -155,20 +156,6 @@ def piece_frame(start_x, start_y, piece):
             )
 
 
-def do_ai_move(game, ai_input):
-    """Gets a specific instruction and calls its function."""
-    if ai_input == Movement.ROTATION:
-        game.rotate()
-    elif ai_input == Movement.RIGHT:
-        game.move(1, 0)
-    elif ai_input == Movement.LEFT:
-        game.move(-1, 0)
-    elif ai_input == Movement.DOWN:
-        game.move(0, 1)
-    else:
-        game.hard_drop()
-
-
 def get_ai_inputs(game):
     """Produces a position calculated by the A.I. And returns the inputs to reach the position."""
     ai_tetris = copy.deepcopy(game)
@@ -179,13 +166,86 @@ def get_ai_inputs(game):
     return position.inputs
 
 
-def menu(game, font):
-    """Displays menu screen and a piece in the middle shaped on a 5x5 grid with some text."""
-    PIECE_MARGIN = (DISPLAY.get_size()[0]+DISPLAY.get_size()[1]) // 7
-    BLOCK_SIZE = PIECE_MARGIN//3
+def handle_event(game, event, ai, auto_move_timer):
+    if event.type == pygame.QUIT:
+        pygame.quit()
+        sys.exit()
 
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not game.running:
+        game.reset()
+        pygame.time.set_timer(auto_move_timer, 1000)
+
+    # automatically moves down slowly
+    if game.running and not ai.on and event.type == auto_move_timer:
+        game.move(0, 1)
+
+    if game.running and not ai.on and event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_RIGHT:
+            game.move(1, 0)
+        if event.key == pygame.K_LEFT:
+            game.move(-1, 0)
+
+        if event.key == pygame.K_UP:
+            game.rotate()
+
+        if event.key == pygame.K_z:
+            game.hold_piece()
+
+        if event.key == pygame.K_RCTRL:
+            game.hard_drop()
+
+        # move down faster
+        if event.key == pygame.K_DOWN:
+            pygame.time.set_timer(auto_move_timer, 100)
+            game.move(0, 1)
+
+    if game.running and event.type == pygame.KEYDOWN and event.key == pygame.K_t:
+        if ai.on:
+            ai.turn_off()
+        else:
+            ai.turn_on(get_ai_inputs(game))
+
+    # set speed back to normal when you release down
+    if event.type == pygame.KEYUP:
+        if event.key == pygame.K_DOWN:
+            pygame.time.set_timer(auto_move_timer, 1000)
+
+
+def game_tick(game, ai, font):
+        DISPLAY.fill("#EEEEEE")
+        show_grid()
+        game.line_clears()
+
+        if not game.piece_alive:
+            game.make_piece()
+            if ai.on:
+                ai.change_piece_executed(get_ai_inputs(game))
+
+        piece_frame(NEXT_X, NEXT_Y, game.next)
+        piece_frame(HELD_X, HELD_Y, game.held)
+        ghost_piece(game)
+        draw_pieces(game)
+
+        if ai.on:
+            ai.execute_move()
+        
+        # display score
+        score_text = font.render(f"Score: {game.score}", False, "black")
+        score_rect = score_text.get_rect(
+            center=(GRID_WIDTH/2 + LEFT_MARGIN, TOP_MARGIN-5 - score_text.get_height()/2)
+        )
+        DISPLAY.blit(score_text, score_rect)
+
+
+def menu_tick(game, font):
+    """Displays menu screen and a piece in the middle shaped on a 5x5 grid with some text."""
+    display_width, display_height = DISPLAY.get_size()[0], DISPLAY.get_size()[1]
+
+    PIECE_MARGIN = (display_width+display_height) // 7
+    BLOCK_SIZE = PIECE_MARGIN//3
     DISPLAY.fill(game.next.ghost_color)
 
+    # draw piece
     for y in range(5):
         for x in range(5):
             if (x, y) not in game.next.shape[0]:
@@ -204,12 +264,12 @@ def menu(game, font):
                  BLOCK_SIZE,
                  BLOCK_SIZE), 10
             )
-                
-    instructions = font.render("Press Space to Begin", False, "white")
-    instructions_rect = instructions.get_rect(
-        center=((X_SCREEN_GRID_PAD+RIGHT_MARGIN+LEFT_MARGIN)/2, PIECE_MARGIN + BLOCK_SIZE*5)
+    # menu text
+    instructions_text = font.render("Press Space to Begin", False, "white")
+    instructions_rect = instructions_text.get_rect(
+        center=((X_SCREEN_GRID_PAD+RIGHT_MARGIN+LEFT_MARGIN)//2, PIECE_MARGIN + BLOCK_SIZE*5)
     )
-    DISPLAY.blit(instructions, instructions_rect)
+    DISPLAY.blit(instructions_text, instructions_rect)
 
     score_text = font.render(f"Your score is  {game.score}!", False, "white")
     score_rect = score_text.get_rect(
@@ -219,7 +279,7 @@ def menu(game, font):
 
 
 def main():
-    """Main function which runs pygame while loop and calls functions every frame."""
+    """Main function which runs pygame's game loop and calls updating functions every frame."""
     pygame.display.set_caption("Tetris")
     clock = pygame.time.Clock()
     font = pygame.font.Font("assets\pixeltype.ttf", 85)
@@ -227,85 +287,16 @@ def main():
     auto_move_timer = pygame.USEREVENT + 1
     pygame.time.set_timer(auto_move_timer, 1000)
     
-    ai_on = False
-    input_idx = 0
     game = Game()
-    
+    ai = AiExecutor(game)
     while True:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not game.running:
-                game.reset()
-                pygame.time.set_timer(auto_move_timer, 1000)
-
-            # automatically moves down slowly
-            if game.running and not ai_on and event.type == auto_move_timer:
-                game.move(0, 1)
-
-            if game.running and not ai_on and event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    game.move(1, 0)
-                if event.key == pygame.K_LEFT:
-                    game.move(-1, 0)
-
-                if event.key == pygame.K_UP:
-                    game.rotate()
-
-                if event.key == pygame.K_z:
-                    game.hold_piece()
-
-                if event.key == pygame.K_RCTRL:
-                    game.hard_drop()
-
-                # move down faster
-                if event.key == pygame.K_DOWN:
-                    pygame.time.set_timer(auto_move_timer, 100)
-                    game.move(0, 1)
-
-            if game.running and event.type == pygame.KEYDOWN and event.key == pygame.K_t:
-                if ai_on:
-                    ai_on = False
-                    input_idx = 0
-                else:
-                    ai_on = True
-                    ai_inputs = get_ai_inputs(game)
-
-            # set speed back to normal when you release down
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_DOWN:
-                    pygame.time.set_timer(auto_move_timer, 1000)
+            handle_event(game, event, ai, auto_move_timer)
 
         if game.running:
-            DISPLAY.fill("#EEEEEE")
-            show_grid()
-            game.line_clears()
-
-            if not game.piece_alive:
-                game.make_piece()
-                if ai_on:
-                    input_idx = 0
-                    ai_inputs = get_ai_inputs(game)
-
-            piece_frame(NEXT_X, NEXT_Y, game.next)
-            piece_frame(HELD_X, HELD_Y, game.held)
-            ghost_piece(game)
-            draw_pieces(game)
-
-            if ai_on:
-                do_ai_move(game, ai_inputs[input_idx])
-                input_idx += 1
-            
-            # display score
-            score_text = font.render(f"Score: {game.score}", False, "black")
-            score_rect = score_text.get_rect(
-                bottomleft=(GRID_WIDTH/2 - score_text.get_width()/2 + LEFT_MARGIN, TOP_MARGIN-15)
-            )
-            DISPLAY.blit(score_text, score_rect)
+            game_tick(game, ai, font)
         else:
-            menu(game, font)
+            menu_tick(game, font)
 
         pygame.display.update()
         clock.tick(60)

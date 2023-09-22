@@ -53,6 +53,43 @@ class Piece:
         return f"{self.color} piece"
 
 
+class AiExecutor:
+    """Class that executes moves retrieved from generate_moves."""
+    def __init__(self, game):
+        self.game = game
+        self.on = False
+        self.inputs = None
+        self.input_idx = 0
+
+    def change_piece_executed(self, new_inputs):
+        self.input_idx = 0
+        self.inputs = new_inputs
+
+    def turn_on(self, new_inputs):
+        self.on = True
+        self.inputs = new_inputs
+
+    def turn_off(self):
+        self.on = False
+        self.inputs = None
+        self.input_idx = 0
+    
+    def execute_move(self):
+        current_input = self.inputs[self.input_idx]
+        self.input_idx += 1
+
+        if current_input == Movement.ROTATION:
+            self.game.rotate()
+        elif current_input == Movement.RIGHT:
+            self.game.move(1, 0)
+        elif current_input == Movement.LEFT:
+            self.game.move(-1, 0)
+        elif current_input == Movement.DOWN:
+            self.game.move(0, 1)
+        else:
+            self.game.hard_drop()
+
+
 class Tetris:
     """Holds a tetris position which can do tetris things like creating pieces, moving and rotating."""
     __slots__ = ("grid", "pieces_bag", "current", "next", 
