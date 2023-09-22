@@ -1,5 +1,4 @@
 from multiprocessing import Pool
-from time import perf_counter
 
 from .generate_moves import generate_all_moves
 from .constants import COLS, ROWS, INVIS_GRID_TOP, Movement, AiMultipliers, GridBlock as GB
@@ -19,12 +18,10 @@ def ai_move(game_copy):
     end_positions += generate_all_moves(game_copy, swapped=True)
 
     # get true scores of position after generating their sub-positions to set the scores
-    start = perf_counter()
     with Pool(processes=5) as pool:
         sub_positions = pool.map(find_best_sub_position, end_positions, chunksize=4)
         for pos, sub_position in zip(end_positions, sub_positions):
             pos.score = sub_position.score
-    print(f"{perf_counter()-start:.2f}s")
 
     best_position = get_best_position(end_positions)
     correct_inputs(best_position)
