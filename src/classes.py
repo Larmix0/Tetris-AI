@@ -62,19 +62,23 @@ class AiExecutor:
         self.input_idx = 0
 
     def change_piece_executed(self, new_inputs):
+        """Starts executing with new inputs."""
         self.input_idx = 0
         self.inputs = new_inputs
 
     def turn_on(self, new_inputs):
+        """Turns on, which starts executing the new inputs."""
         self.on = True
         self.inputs = new_inputs
 
     def turn_off(self):
+        """Turns off, which stops execution and resets the AiExecutor"""
         self.on = False
         self.inputs = None
         self.input_idx = 0
     
     def execute_move(self):
+        """Executes one move from the inputs and increments the input index."""
         current_input = self.inputs[self.input_idx]
         self.input_idx += 1
 
@@ -88,6 +92,13 @@ class AiExecutor:
             self.game.move(0, 1)
         else:
             self.game.hard_drop()
+
+    def __repr__(self):
+        return (f"{__class__.__name__}({self.game!r})\n\n"
+                f"on={self.on}, inputs={self.inputs}, input_idx={self.input_idx}")
+
+    def __str__(self):
+        return f"{self.game!s}\nExecutes {self.inputs} for above game\n"
 
 
 class Tetris:
