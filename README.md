@@ -1,8 +1,9 @@
 # What the project is about
 This is a tetris game powered by an AI made in python using the pygame library. It's also dynamic in height and width (though the math isn't the most dynamic currently, so offsets do break if you change rows and cols too much in constants.py).
 
-This bot was made slowly over the months with small changes every now and then, so you shouldn't set your expectations too high in terms of how the code is since my decision making changed (and I'd say improved) over time, and my style also changed.
-I'm still pretty proud about this project since the AI runs relatively fast (~0.15 seconds per move) despite calculating 1 move into the future.
+This bot was made slowly over the months with small changes every now and then, and it's one of my first "real" projects so don't' set your expectations too high.
+
+I'm still pretty proud about this project since the AI runs at relatively decent speed (~0.15 seconds per move) while calculating 1 move into the future.
 
 # Playing the game
 After running the game you use left arrow and right arrow to move the piece. Up arrow rotates, down arrow moves down, control hard-drops the piece, and "z" holds the piece. Press "t" during the game to toggle the AI on and off.
